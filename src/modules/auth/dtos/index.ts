@@ -27,3 +27,13 @@ export class AuthResponseDto {
   @Expose()
   access_token: string;
 }
+
+export class ChangePasswordDto {
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
+
+  @IsNotEmpty()
+  @MinLength(6)
+  confirmPassword: string;
+}

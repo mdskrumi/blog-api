@@ -6,12 +6,12 @@ import {
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
-import { AuthDto } from './dtos';
-
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
+
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+
+import { AuthDto, AuthResponseDto, ChangePasswordDto } from './dtos';
 
 const scrypt = promisify(_scrypt);
 
@@ -55,6 +55,25 @@ export class AuthService {
     const accessToken = await this.signedToken(user.id, user.email);
 
     return { ...user, access_token: accessToken.access_token };
+  }
+
+  async changePassword(dto: ChangePasswordDto, user: any) {
+    if (dto.password != dto.confirmPassword) {
+      throw new BadRequestException('passwords do not match');
+    }
+
+    const [userSalt, userHash] = user.password.split('.');
+    const hash = (await scrypt(dto.password, userSalt, 32)) as Buffer;
+
+    if (userHash === hash.toString('hex')) {
+      throw new BadRequestException('Please enter a new password');
+    }
+    const newPassword = await this.hashPassword(dto.password);
+
+    return this.prismaService.user.update({
+      where: { email: user.email },
+      data: { password: newPassword },
+    });
   }
 
   async hashPassword(password: string): Promise<string> {
