@@ -3,7 +3,12 @@ import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
-import { AuthDto, AuthResponseDto, ChangePasswordDto } from './dtos';
+import {
+  AuthDto,
+  AuthResponseDto,
+  ChangePasswordDto,
+  UpdateUserDto,
+} from './dtos';
 import { UserService } from './user.service';
 
 @Controller('auth')
@@ -26,7 +31,7 @@ export class AuthController {
 
   @Get('current-user')
   @UseGuards(JwtAuthGuard)
-  getCurrentUser(@CurrentUser() currentUser) {
+  getCurrentUser(@CurrentUser() currentUser: AuthResponseDto) {
     return currentUser;
   }
 
@@ -37,5 +42,14 @@ export class AuthController {
     @CurrentUser() currentUser: AuthResponseDto,
   ) {
     return this.authService.changePassword(body, currentUser);
+  }
+
+  @Patch('update')
+  @UseGuards(JwtAuthGuard)
+  updateUser(
+    @Body() body: UpdateUserDto,
+    @CurrentUser() currentUser: AuthResponseDto,
+  ) {
+    return this.userService.updateUser(body, currentUser.id);
   }
 }
