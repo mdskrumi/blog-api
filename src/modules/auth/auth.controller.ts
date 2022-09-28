@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CurrentUser } from 'src/decorators/current-user.decorator';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
@@ -51,5 +59,11 @@ export class AuthController {
     @CurrentUser() currentUser: AuthResponseDto,
   ) {
     return this.userService.updateUser(body, currentUser.id);
+  }
+
+  @Delete('delete')
+  @UseGuards(JwtAuthGuard)
+  deleteUser(@CurrentUser() currentUser: AuthResponseDto) {
+    return this.authService.deleteUser(currentUser);
   }
 }

@@ -76,6 +76,14 @@ export class AuthService {
     });
   }
 
+  async deleteUser(user: AuthResponseDto) {
+    await this.prismaService.user.delete({
+      where: {
+        id: user.id,
+      },
+    });
+  }
+
   async hashPassword(password: string): Promise<string> {
     const salt = randomBytes(8).toString('hex');
     const hash = (await scrypt(password, salt, 32)) as Buffer;
