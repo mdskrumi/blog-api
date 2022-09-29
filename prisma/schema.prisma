@@ -25,6 +25,36 @@ model User {
 
   firstName String?
   lastName  String?
+  Blog      Blog[]
 
   @@map("users")
+}
+
+model Blog {
+  id Int @id @default(autoincrement())
+
+  title     String
+  body      String
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  readCount Int      @default(0)
+
+  author        User            @relation(fields: [authorId], references: [id])
+  authorId      Int
+  BlogReference BlogReference[]
+
+  @@map("blogs")
+}
+
+model BlogReference {
+  id Int @id @default(autoincrement())
+
+  title String?
+  url   String
+
+  blog   Blog @relation(fields: [blogId], references: [id])
+  blogId Int
+
+  @@map("blog_references")
 }
