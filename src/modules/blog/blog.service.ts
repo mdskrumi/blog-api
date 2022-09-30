@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateBlogDto, UpdateBlogDto } from './dto';
 
@@ -20,9 +16,12 @@ export class BlogService {
   }
 
   async findOne(id: number) {
-    const blog = await this.prismaService.blog.findUnique({
+    const blog = await this.prismaService.blog.update({
       where: {
         id: id,
+      },
+      data: {
+        readCount: { increment: 1 },
       },
     });
     if (!blog) throw new NotFoundException('Blog is unavailable.');
