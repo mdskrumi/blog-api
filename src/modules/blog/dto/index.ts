@@ -1,14 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class BlogReference {
-  @IsString()
-  title: string;
-
-  @IsString()
-  @IsNotEmpty()
-  url: string;
-}
-
 export class CreateBlogDto {
   @IsString()
   @IsNotEmpty()
