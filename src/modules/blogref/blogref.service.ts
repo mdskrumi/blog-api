@@ -5,14 +5,13 @@ import {
 } from '@nestjs/common';
 import { AuthResponseDto } from '../auth/dtos';
 import { PrismaService } from '../prisma/prisma.service';
-import { BlogReferenceDto } from './dto';
+import { BlogReferenceDto, UpdateBlogReferenceDto } from './dto';
 
 @Injectable()
 export class BlogrefService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createBlogrefDto: BlogReferenceDto, user: AuthResponseDto) {
-    console.log({ user });
     const blog = await this.prismaService.blog.findUnique({
       where: {
         id: createBlogrefDto.blogId,
@@ -21,14 +20,15 @@ export class BlogrefService {
     if (!blog) {
       throw new NotFoundException('Blog is not found');
     }
-    if (blog.authorId != user.id) {
+    if (blog.userId != user.id) {
       throw new ForbiddenException(
         'User is not authorized to modify this blog',
       );
     }
+
     try {
       const blogRef = await this.prismaService.blogReference.create({
-        data: createBlogrefDto,
+        data: { ...createBlogrefDto, userId: user.id },
       });
       return blogRef;
     } catch (err) {
@@ -40,15 +40,53 @@ export class BlogrefService {
     return this.prismaService.blogReference.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} blogref`;
+  async findOne(id: number) {
+    const blogRef = await this.prismaService.blogReference.findUnique({
+      where: { id: id },
+    });
+    if (!blogRef) {
+      throw new NotFoundException('Blog is not found');
+    }
+    return blogRef;
   }
 
-  update(id: number, updateBlogrefDto: BlogReferenceDto) {
-    return `This action updates a #${id} blogref`;
+  async update(
+    id: number,
+    updateBlogrefDto: UpdateBlogReferenceDto,
+    user: AuthResponseDto,
+  ) {
+    const { count } = await this.prismaService.blogReference.updateMany({
+      where: {
+        AND: [{ id: id }, { userId: user.id }],
+      },
+      data: updateBlogrefDto,
+    });
+
+    if (count === 0) {
+      throw new ForbiddenException(
+        'User is not authorized to update this blog reference',
+      );
+    }
+
+    return {
+      message: 'The blog is updated',
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blogref`;
+  async remove(id: number, user: AuthResponseDto) {
+    const { count } = await this.prismaService.blogReference.deleteMany({
+      where: {
+        AND: [{ id: id }, { userId: user.id }],
+      },
+    });
+    if (count === 0) {
+      throw new ForbiddenException(
+        'User is not authorized to delete this blog reference',
+      );
+    }
+
+    return {
+      message: 'The blog is deleted',
+    };
   }
 }

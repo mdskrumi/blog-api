@@ -13,7 +13,7 @@ import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { AuthResponseDto } from '../auth/dtos';
 import { BlogrefService } from './blogref.service';
 
-import { BlogReferenceDto } from './dto';
+import { BlogReferenceDto, UpdateBlogReferenceDto } from './dto';
 
 @Controller('blogref')
 @UseGuards(JwtAuthGuard)
@@ -39,12 +39,16 @@ export class BlogrefController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBlogrefDto: BlogReferenceDto) {
-    return this.blogrefService.update(+id, updateBlogrefDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateBlogrefDto: UpdateBlogReferenceDto,
+    @CurrentUser() user: AuthResponseDto,
+  ) {
+    return this.blogrefService.update(+id, updateBlogrefDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogrefService.remove(+id);
+  remove(@Param('id') id: string, @CurrentUser() user: AuthResponseDto) {
+    return this.blogrefService.remove(+id, user);
   }
 }

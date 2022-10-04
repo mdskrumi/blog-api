@@ -7,7 +7,7 @@ export class BlogService {
   constructor(private prismaService: PrismaService) {}
   create(createBlogDto: CreateBlogDto, user: any) {
     return this.prismaService.blog.create({
-      data: { ...createBlogDto, authorId: user.id },
+      data: { ...createBlogDto, userId: user.id },
     });
   }
 
@@ -33,7 +33,7 @@ export class BlogService {
       const { count } = await this.prismaService.blog.updateMany({
         where: {
           id: id,
-          authorId: user.id,
+          userId: user.id,
         },
         data: updateBlogDto,
       });
@@ -51,7 +51,7 @@ export class BlogService {
   async remove(id: number, user: any) {
     try {
       const { count } = await this.prismaService.blog.deleteMany({
-        where: { id: id, authorId: user.id },
+        where: { id: id, userId: user.id },
       });
       if (!count) {
         throw new Error();

@@ -23,9 +23,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  firstName String?
-  lastName  String?
-  Blog      Blog[]
+  firstName     String?
+  lastName      String?
+  Blog          Blog[]
+  BlogReference BlogReference[]
 
   @@map("users")
 }
@@ -40,8 +41,8 @@ model Blog {
   updatedAt DateTime @updatedAt
   readCount Int      @default(0)
 
-  author        User            @relation(fields: [authorId], references: [id])
-  authorId      Int
+  user          User            @relation(fields: [userId], references: [id])
+  userId        Int
   BlogReference BlogReference[]
 
   @@map("blogs")
@@ -55,6 +56,9 @@ model BlogReference {
 
   blog   Blog @relation(fields: [blogId], references: [id])
   blogId Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
 
   @@map("blog_references")
 }

@@ -13,3 +13,13 @@ export class BlogReferenceDto {
   @IsNotEmpty()
   blogId: number;
 }
+
+export class UpdateBlogReferenceDto {
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @IsString()
+  @IsOptional()
+  url: string;
+}
