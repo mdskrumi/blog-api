@@ -16,11 +16,11 @@ import { BlogrefService } from './blogref.service';
 import { BlogReferenceDto, UpdateBlogReferenceDto } from './dto';
 
 @Controller('blogref')
-@UseGuards(JwtAuthGuard)
 export class BlogrefController {
   constructor(private readonly blogrefService: BlogrefService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createBlogrefDto: BlogReferenceDto,
     @CurrentUser() user: AuthResponseDto,
@@ -39,6 +39,7 @@ export class BlogrefController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateBlogrefDto: UpdateBlogReferenceDto,
@@ -48,6 +49,7 @@ export class BlogrefController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @CurrentUser() user: AuthResponseDto) {
     return this.blogrefService.remove(+id, user);
   }

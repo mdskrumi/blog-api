@@ -14,11 +14,11 @@ import { BlogService } from './blog.service';
 import { CreateBlogDto, UpdateBlogDto } from './dto';
 
 @Controller('blog')
-@UseGuards(JwtAuthGuard)
 export class BlogController {
   constructor(private readonly blogService: BlogService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() createBlogDto: CreateBlogDto, @CurrentUser() user: any) {
     return this.blogService.create(createBlogDto, user);
   }
@@ -34,6 +34,7 @@ export class BlogController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
@@ -43,6 +44,7 @@ export class BlogController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.blogService.remove(+id, user);
   }
