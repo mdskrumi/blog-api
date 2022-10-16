@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 // datasource db {
 //   provider = "mysql"
-//   url      = "mysql://janedoe:mypassword@localhost:3306/mydb"
+//   url      = "mysql://root:@localhost:3306/blog_api"
 // }
 
 model User {
