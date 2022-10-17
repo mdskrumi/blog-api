@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateBlogDto, UpdateBlogDto } from './dto';
 
@@ -12,7 +16,7 @@ export class BlogService {
   }
 
   findAll() {
-    return this.prismaService.blog.findMany();
+    return this.prismaService.blog.findMany({ where: { isPublished: true } });
   }
 
   async findOne(id: number) {
@@ -62,5 +66,31 @@ export class BlogService {
     } catch (err) {
       throw new NotFoundException('Blog is unavailable.');
     }
+  }
+
+  adminFindAll(user: any) {
+    if (user.isAdmin) return this.prismaService.blog.findMany();
+    throw new ForbiddenException('User is not admin');
+  }
+
+  async togglePublishBlog(id: number, user: any) {
+    if (user.isAdmin) {
+      const blog = await this.prismaService.blog.findUnique({
+        where: { id: id },
+      });
+
+      return await this.prismaService.blog.update({
+        where: { id: id },
+        data: { isPublished: !blog.isPublished },
+      });
+    } else throw new ForbiddenException('User is not admin');
+  }
+
+  async adminRemove(id: number, user: any) {
+    if (user.isAdmin) {
+      return await this.prismaService.blog.delete({
+        where: { id: id },
+      });
+    } else throw new ForbiddenException('User is not admin');
   }
 }

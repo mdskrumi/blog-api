@@ -28,6 +28,12 @@ export class BlogController {
     return this.blogService.findAll();
   }
 
+  @Get('/admin')
+  @UseGuards(JwtAuthGuard)
+  adminFindAll(@CurrentUser() user: any) {
+    return this.blogService.adminFindAll(user);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(+id);
@@ -46,6 +52,18 @@ export class BlogController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.blogService.remove(+id, user);
+  }
+
+  @Patch(':id/admin')
+  @UseGuards(JwtAuthGuard)
+  togglePublish(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.blogService.togglePublishBlog(+id, user);
+  }
+
+  @Delete(':id/admin')
+  @UseGuards(JwtAuthGuard)
+  adminRemove(@Param('id') id: string, @CurrentUser() user: any) {
     return this.blogService.remove(+id, user);
   }
 }
